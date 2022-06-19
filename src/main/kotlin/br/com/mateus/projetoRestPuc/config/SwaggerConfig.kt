@@ -32,29 +32,11 @@ class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())
-                .securitySchemes(listOf(ApiKey("Token Access", HttpHeaders.AUTHORIZATION, In.HEADER.name)))
-                .securityContexts(listOf(securityContext()))
-    }
-
-
-    private fun securityContext(): SecurityContext? {
-        return SecurityContext.builder()
-                .securityReferences(defaultAuth())
-                .forPaths(PathSelectors.ant("/**"))
-                .build()
-    }
-
-    fun defaultAuth(): List<SecurityReference?>? {
-        val authorizationScope = AuthorizationScope("ADMIN", "accessEverything")
-        val authorizationScopes = arrayOfNulls<AuthorizationScope>(1)
-        authorizationScopes[0] = authorizationScope
-        return listOf(
-                SecurityReference("Token Access", authorizationScopes))
     }
 
     private fun apiInfo(): ApiInfo? {
         return ApiInfo(
-                "API referring to Graduate PUC - Brazilian Championship",
+                "API PUC Minas - Brazilian Championship",
                 "API to handle teams, players and league transfers",
                 "Version 1.0",
                 "",

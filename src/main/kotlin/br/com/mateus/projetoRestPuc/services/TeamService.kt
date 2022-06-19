@@ -1,7 +1,10 @@
 package br.com.mateus.projetoRestPuc.services
 
 import br.com.mateus.projetoRestPuc.dtos.TeamDto
+import br.com.mateus.projetoRestPuc.dtos.TeamTransfersDto
+import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
+import br.com.mateus.projetoRestPuc.entities.TransferEntity
 import java.util.*
 
 interface TeamService {
@@ -14,6 +17,10 @@ interface TeamService {
 
     fun delete(id: Int)
 
-    fun convertDtoToNewTeam(teamDto: TeamDto): TeamEntity?
+    fun convertDtoToNewTeam(teamDto: TeamDto, date: Date): TeamEntity
+
+    fun findTeamPlayers(id: Int): List<PlayerEntity>
+
+    fun findTeamTransfers(id: Int): TeamTransfersDto
 
 }

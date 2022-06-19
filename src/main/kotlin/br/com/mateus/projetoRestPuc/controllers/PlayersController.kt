@@ -220,13 +220,13 @@ class PlayersController(val playerService: PlayerService, val transferService: T
         ApiResponse(code = 400, message = "Parameter not informed"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}/transfers"],method = [RequestMethod.GET])
-    fun findTransfersPlayer(@PathVariable id: Int?): ResponseEntity<List<PlayerTransfersDto>> {
+    fun findTransfersPlayer(@PathVariable id: Int?): ResponseEntity<List<TransferEntity>> {
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
         }
 
-        val transfers: List<PlayerTransfersDto> = playerService.findPlayerTransfers(id)
+        val transfers: List<TransferEntity> = playerService.findPlayerTransfers(id)
 
         return ResponseEntity.ok(transfers)
     }

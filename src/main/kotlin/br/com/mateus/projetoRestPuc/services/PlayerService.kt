@@ -1,7 +1,6 @@
 package br.com.mateus.projetoRestPuc.services
 
 import br.com.mateus.projetoRestPuc.dtos.PlayerDto
-import br.com.mateus.projetoRestPuc.dtos.PlayerTransfersDto
 import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.entities.TransferEntity
@@ -21,6 +20,6 @@ interface PlayerService {
 
     fun convertDtoToNewPlayer(playerDto: PlayerDto, date: Date, team: TeamEntity?): PlayerEntity
 
-    fun findPlayerTransfers(id: Int): List<PlayerTransfersDto>
+    fun findPlayerTransfers(id: Int): List<TransferEntity>
 
 }
