@@ -30,16 +30,6 @@ data class TransferEntity (
     var destinyTeam: TeamEntity? = null,
     @get:ManyToOne(fetch = FetchType.LAZY)
     @get:JoinColumn(name = "jogadorId", referencedColumnName = "id")
-    var player: PlayerEntity? = null,
-
-    @get:Column(name = "timeOrigemHistorico")
-    @JsonIgnore
-    var originTeamHistory: String? = null,
-    @get:Column(name = "timeDestinoHistorico")
-    @JsonIgnore
-    var destinyTeamHistory: String? = null,
-    @get:Column(name = "jogadorHistorico")
-    @JsonIgnore
-    var playerHistory: String? = null
+    var player: PlayerEntity? = null
 
 )

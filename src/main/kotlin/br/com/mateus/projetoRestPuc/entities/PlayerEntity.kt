@@ -27,24 +27,12 @@ data class PlayerEntity (
     @get:Basic
     @get:Column(name = "codigoInscricao", nullable = false)
     var codePlayer: String? = null,
+
     @get:ManyToOne(fetch = FetchType.LAZY)
     @get:JoinColumn(name = "timeId", referencedColumnName = "id")
-    @JsonIgnore
     var playerTeam: TeamEntity? = null,
-    @get:OneToMany(mappedBy = "player")
+    @get:OneToMany(mappedBy = "player", cascade = [CascadeType.REMOVE])
     @JsonIgnore
     var transfers: List<TransferEntity>? = null
 
-
-) {
-
-    @PreRemove
-    fun removePlayer() {
-        transfers?.forEach { transfer ->
-            transfer.playerHistory = "Nome: " + transfer.player?.name + " / Código Inscrição: " + transfer.player?.codePlayer
-            transfer.player = null
-        }
-
-    }
-
-}
+)

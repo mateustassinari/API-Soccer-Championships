@@ -33,10 +33,10 @@ data class TeamEntity (
     @get:OneToMany(mappedBy = "playerTeam")
     @JsonIgnore
     var players: List<PlayerEntity>? = null,
-    @get:OneToMany(mappedBy = "originTeam")
+    @get:OneToMany(mappedBy = "originTeam", cascade = [CascadeType.REMOVE])
     @JsonIgnore
     var originTransfers: List<TransferEntity>? = null,
-    @get:OneToMany(mappedBy = "destinyTeam")
+    @get:OneToMany(mappedBy = "destinyTeam", cascade = [CascadeType.REMOVE])
     @JsonIgnore
     var destinyTransfers: List<TransferEntity>? = null
 
@@ -46,14 +46,6 @@ data class TeamEntity (
     @PreRemove
     fun removeTeam() {
         players?.forEach { player -> player.playerTeam = null }
-        originTransfers?.forEach { originTransfers ->
-            originTransfers.originTeamHistory = "Nome: " + originTransfers.originTeam?.name + " / Localidade Time: " + originTransfers.originTeam?.city + "-" + originTransfers.originTeam?.uf
-            originTransfers.originTeam = null
-        }
-        destinyTransfers?.forEach { destinyTransfers ->
-            destinyTransfers.destinyTeamHistory = "Nome: " + destinyTransfers.destinyTeam?.name + " / Localidade Time: " + destinyTransfers.destinyTeam?.city + "-" + destinyTransfers.destinyTeam?.uf
-            destinyTransfers.destinyTeam = null
-        }
     }
 }
 

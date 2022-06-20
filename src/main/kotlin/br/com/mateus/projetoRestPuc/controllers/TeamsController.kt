@@ -87,7 +87,7 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
         return ResponseEntity.created(uri).body(response)
     }
 
-    @ApiOperation("Update a Team")
+    @ApiOperation("Update Name of a Team")
     @ApiResponses(value = [ApiResponse(code = 204, message = "Updated Team"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 500, message = "Unexpected error")] )
@@ -109,8 +109,8 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
         return ResponseEntity.noContent().build()
     }
 
-    @ApiOperation("Delete a Team")
-    @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Team"),
+    @ApiOperation("Delete a Team and yours Transfers")
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Team and Transfers"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.DELETE])

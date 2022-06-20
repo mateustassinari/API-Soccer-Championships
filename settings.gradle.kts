@@ -1,2 +1,2 @@
-rootProject.name = "projetoRestPucOrig"
+rootProject.name = "projetoRestPuc"
 
