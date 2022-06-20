@@ -10,7 +10,6 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "Times", catalog = "")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 data class TeamEntity (
     @get:Id
     @get:GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -20,8 +19,11 @@ data class TeamEntity (
     @get:Column(name = "nome", nullable = false)
     var name: String? = null,
     @get:Basic
-    @get:Column(name = "local", nullable = false)
-    var place: String? = null,
+    @get:Column(name = "siglaEstado", nullable = false)
+    var uf: String? = null,
+    @get:Basic
+    @get:Column(name = "cidade", nullable = false)
+    var city: String? = null,
     @get:Basic
     @get:Column(name = "dataFundacao", nullable = false)
     @JsonFormat(pattern="dd/MM/yyyy")
@@ -45,11 +47,11 @@ data class TeamEntity (
     fun removeTeam() {
         players?.forEach { player -> player.playerTeam = null }
         originTransfers?.forEach { originTransfers ->
-            originTransfers.originTeamHistoryId = originTransfers.originTeam?.id
+            originTransfers.originTeamHistory = "Nome: " + originTransfers.originTeam?.name + " / Localidade Time: " + originTransfers.originTeam?.city + "-" + originTransfers.originTeam?.uf
             originTransfers.originTeam = null
         }
         destinyTransfers?.forEach { destinyTransfers ->
-            destinyTransfers.destinyTeamHistoryId = destinyTransfers.destinyTeam?.id
+            destinyTransfers.destinyTeamHistory = "Nome: " + destinyTransfers.destinyTeam?.name + " / Localidade Time: " + destinyTransfers.destinyTeam?.city + "-" + destinyTransfers.destinyTeam?.uf
             destinyTransfers.destinyTeam = null
         }
     }

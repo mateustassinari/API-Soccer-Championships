@@ -16,6 +16,4 @@ class HealthController {
         throw IllegalStateException("This method shouldn't be called.")
     }
 
-
-
 }

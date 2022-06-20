@@ -8,7 +8,6 @@ import br.com.mateus.projetoRestPuc.response.Response
 import br.com.mateus.projetoRestPuc.services.PlayerService
 import br.com.mateus.projetoRestPuc.services.TeamService
 import br.com.mateus.projetoRestPuc.services.TransferService
-import br.com.mateus.projetoRestPuc.utils.CPFUtil
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
@@ -26,23 +25,13 @@ import javax.validation.Valid
 @RequestMapping("/players")
 class PlayersController(val playerService: PlayerService, val transferService: TransferService, val teamService: TeamService) {
 
-    @ApiOperation("Return Player by name")
+    @ApiOperation("Return Players")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
-        ApiResponse(code = 404, message = "Not found"),
-        ApiResponse(code = 400, message = "Parameter not informed"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(method = [RequestMethod.GET])
-    fun findPlayer(@RequestParam(value="name") name: String?): ResponseEntity<PlayerEntity> {
-
-        if (name == null) {
-            return ResponseEntity.badRequest().build()
-        }
-
-        val player: Optional<PlayerEntity> = playerService.findPlayerByName(name)
-        if (player.isEmpty) {
-            return ResponseEntity.notFound().build()
-        }
-        return ResponseEntity.ok(player.get())
+    fun findPlayers(): ResponseEntity<List<PlayerEntity>> {
+        val players: List<PlayerEntity> = playerService.findPlayers()
+        return ResponseEntity.ok(players)
     }
 
     @ApiOperation("Return Player by id")
@@ -66,7 +55,7 @@ class PlayersController(val playerService: PlayerService, val transferService: T
 
     @ApiOperation("Register a new Player without a Team")
     @ApiResponses(value = [ApiResponse(code = 201, message = "Player Created - New resource URI in header"),
-        ApiResponse(code = 409, message = "User already registered"),
+        ApiResponse(code = 409, message = "Player already exists"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(method = [RequestMethod.POST])
@@ -74,13 +63,9 @@ class PlayersController(val playerService: PlayerService, val transferService: T
         val response: Response<PlayerEntity> = Response()
         var date: Date? = null
 
-        val playerExists: Optional<PlayerEntity> = playerService.findPlayerByCpf(playerDto.cpf!!)
+        val playerExists: Optional<PlayerEntity> = playerService.findPlayerByCode(playerDto.codePlayer!!)
         if(!playerExists.isEmpty) {
-            response.erros.add("Cpf already registered!")
-        }
-
-        if(!CPFUtil.myValidateCPF(playerDto.cpf!!)) {
-            response.erros.add("CPF invalid!")
+            response.erros.add("Player already exists!")
         }
 
         try {
@@ -120,24 +105,7 @@ class PlayersController(val playerService: PlayerService, val transferService: T
             return ResponseEntity.notFound().build()
         }
 
-        if(!playerDto.name.equals("") && playerDto.name != null)
-            playerExists.get().name = playerDto.name
-
-        if(!playerDto.country.equals("") && playerDto.country != null)
-            playerExists.get().country = playerDto.country
-
-        if(!playerDto.birthDate.equals("") && playerDto.birthDate != null) {
-
-            try {
-                val format = SimpleDateFormat("dd/MM/yyyy")
-                format.isLenient = false
-                val date = format.parse(playerDto.birthDate)
-                playerExists.get().birthDate = java.sql.Date(date.time)
-            } catch (e: Exception) {
-                return ResponseEntity.badRequest().body("birthDate is must be in format dd/MM/yyyy and be valid!")
-            }
-
-        }
+        playerExists.get().name = playerDto.name
 
         playerService.persist(playerExists.get())
         return ResponseEntity.noContent().build()
@@ -165,7 +133,6 @@ class PlayersController(val playerService: PlayerService, val transferService: T
 
     @ApiOperation("Register a new Transfer of a Player by id")
     @ApiResponses(value = [ApiResponse(code = 201, message = "Player Created - New resource URI in header"),
-        ApiResponse(code = 409, message = "User already registered"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}/transfers"], method = [RequestMethod.POST])
@@ -181,7 +148,7 @@ class PlayersController(val playerService: PlayerService, val transferService: T
             response.erros.add("Value must be higher than 0!")
         }
 
-        val player: Optional<PlayerEntity> = playerService.findPlayerById(id)
+        var player: Optional<PlayerEntity> = playerService.findPlayerById(id)
         if(player.isEmpty) {
             response.erros.add("Player not exists!")
         }
@@ -189,6 +156,10 @@ class PlayersController(val playerService: PlayerService, val transferService: T
         val team: Optional<TeamEntity> = teamService.findTeamById(transferDto.destinyTeamId!!)
         if(team.isEmpty) {
             response.erros.add("Team not exists!")
+        }
+
+        if(team.get().id == player.get().id) {
+            response.erros.add("Player it's already from that team!")
         }
 
         try {
@@ -205,6 +176,8 @@ class PlayersController(val playerService: PlayerService, val transferService: T
 
         var transfer: TransferEntity = transferService.convertDtoToNewTransfer(transferDto, date!!, team.get(), player.get())
         transfer = transferService.persist(transfer)
+        player.get().playerTeam = team.get()
+        playerService.persist(player.get())
 
         val uri: URI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(transfer.id).toUri()
 
@@ -216,7 +189,6 @@ class PlayersController(val playerService: PlayerService, val transferService: T
 
     @ApiOperation("Return Transfers of a Player by id")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
-        ApiResponse(code = 404, message = "Not found"),
         ApiResponse(code = 400, message = "Parameter not informed"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}/transfers"],method = [RequestMethod.GET])

@@ -8,7 +8,6 @@ import javax.persistence.*
 @Entity
 @Table(name = "Jogadores", catalog = "")
 @JsonIgnoreProperties("hibernateLazyInitializer", "handler")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 data class PlayerEntity (
     @get:Id
     @get:GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -26,8 +25,8 @@ data class PlayerEntity (
     @ApiModelProperty(dataType = "java.sql.Date")
     var birthDate: Date? = null,
     @get:Basic
-    @get:Column(name = "cpf", nullable = false)
-    var cpf: String? = null,
+    @get:Column(name = "codigoInscricao", nullable = false)
+    var codePlayer: String? = null,
     @get:ManyToOne(fetch = FetchType.LAZY)
     @get:JoinColumn(name = "timeId", referencedColumnName = "id")
     @JsonIgnore
@@ -42,7 +41,7 @@ data class PlayerEntity (
     @PreRemove
     fun removePlayer() {
         transfers?.forEach { transfer ->
-            transfer.playerHistoryId = transfer.player?.id
+            transfer.playerHistory = "Nome: " + transfer.player?.name + " / Código Inscrição: " + transfer.player?.codePlayer
             transfer.player = null
         }
 

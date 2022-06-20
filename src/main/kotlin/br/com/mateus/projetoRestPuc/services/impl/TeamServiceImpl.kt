@@ -18,7 +18,9 @@ class TeamServiceImpl(val teamRepository: TeamRepository): TeamService {
 
     override fun findTeamById(id: Int): Optional<TeamEntity> = teamRepository.findById(id)
 
-    override fun findTeamByName(name: String): Optional<TeamEntity> = teamRepository.findByName(name)
+    override fun findTeams(): List<TeamEntity> = teamRepository.findAll()
+
+    override fun findTeamByNameAndUfAndCity(name: String, uf: String, city: String): Optional<TeamEntity> = teamRepository.findByNameAndUfAndCity(name,uf,city)
 
     @Transactional
     override fun persist(team: TeamEntity): TeamEntity = teamRepository.save(team)
@@ -27,7 +29,7 @@ class TeamServiceImpl(val teamRepository: TeamRepository): TeamService {
     override fun delete(id: Int): Unit = teamRepository.deleteById(id)
 
     override fun convertDtoToNewTeam(teamDto: TeamDto, date: Date): TeamEntity {
-        return TeamEntity(null, teamDto.name, teamDto.place, java.sql.Date(date.time), null, null, null)
+        return TeamEntity(null, teamDto.name, teamDto.uf, teamDto.city, java.sql.Date(date.time), null, null, null)
     }
 
     override fun findTeamPlayers(id: Int): List<PlayerEntity> {

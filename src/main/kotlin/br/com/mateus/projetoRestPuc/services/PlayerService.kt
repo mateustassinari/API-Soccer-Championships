@@ -10,9 +10,9 @@ interface PlayerService {
 
     fun findPlayerById(id: Int): Optional<PlayerEntity>
 
-    fun findPlayerByName(name: String): Optional<PlayerEntity>
+    fun findPlayers(): List<PlayerEntity>
 
-    fun findPlayerByCpf(cpf: String): Optional<PlayerEntity>
+    fun findPlayerByCode(codePlayer: String): Optional<PlayerEntity>
 
     fun persist(player: PlayerEntity): PlayerEntity
 

@@ -1,11 +1,10 @@
 package br.com.mateus.projetoRestPuc.dtos
 
+import org.hibernate.validator.constraints.NotEmpty
+
 data class TeamUpdDto (
 
-    var name: String? = null,
-
-    var place: String? = null,
-
-    var foundingDate: String? = null
+    @get:NotEmpty(message="Name cannot be empty")
+    var name: String? = null
 
 )

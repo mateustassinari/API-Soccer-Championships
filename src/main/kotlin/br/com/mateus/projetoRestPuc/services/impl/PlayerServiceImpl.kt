@@ -17,9 +17,9 @@ class PlayerServiceImpl(val playerRepository: PlayerRepository, val teamReposito
 
     override fun findPlayerById(id: Int): Optional<PlayerEntity> = playerRepository.findById(id)
 
-    override fun findPlayerByName(name: String): Optional<PlayerEntity> = playerRepository.findByName(name)
+    override fun findPlayers(): List<PlayerEntity> = playerRepository.findAll()
 
-    override fun findPlayerByCpf(cpf: String): Optional<PlayerEntity> = playerRepository.findByCpf(cpf)
+    override fun findPlayerByCode(codePlayer: String): Optional<PlayerEntity> = playerRepository.findByCodePlayer(codePlayer)
 
     @Transactional
     override fun persist(player: PlayerEntity): PlayerEntity = playerRepository.save(player)
@@ -28,7 +28,7 @@ class PlayerServiceImpl(val playerRepository: PlayerRepository, val teamReposito
     override fun delete(id: Int): Unit = playerRepository.deleteById(id)
 
     override fun convertDtoToNewPlayer(playerDto: PlayerDto, date: java.util.Date, team: TeamEntity?): PlayerEntity {
-        return PlayerEntity(null, playerDto.name, playerDto.country, Date(date.time), playerDto.cpf, team)
+        return PlayerEntity(null, playerDto.name, playerDto.country, Date(date.time), playerDto.codePlayer, team)
     }
 
     override fun findPlayerTransfers(id: Int): List<TransferEntity> {

@@ -6,6 +6,6 @@ import java.util.*
 
 interface TeamRepository: JpaRepository<TeamEntity, Int> {
 
-    fun findByName(name: String): Optional<TeamEntity>
+    fun findByNameAndUfAndCity(name: String, uf: String, city: String): Optional<TeamEntity>
 
 }

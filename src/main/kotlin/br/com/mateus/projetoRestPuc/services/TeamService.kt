@@ -11,7 +11,9 @@ interface TeamService {
 
     fun findTeamById(id: Int): Optional<TeamEntity>
 
-    fun findTeamByName(name: String): Optional<TeamEntity>
+    fun findTeams(): List<TeamEntity>
+
+    fun findTeamByNameAndUfAndCity(name: String, uf: String, city: String): Optional<TeamEntity>
 
     fun persist(team: TeamEntity): TeamEntity
 

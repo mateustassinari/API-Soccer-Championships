@@ -6,8 +6,6 @@ import java.util.*
 
 interface PlayerRepository: JpaRepository<PlayerEntity, Int>  {
 
-    fun findByName(name: String): Optional<PlayerEntity>
-
-    fun findByCpf(cpf: String): Optional<PlayerEntity>
+    fun findByCodePlayer(codePlayer: String): Optional<PlayerEntity>
 
 }

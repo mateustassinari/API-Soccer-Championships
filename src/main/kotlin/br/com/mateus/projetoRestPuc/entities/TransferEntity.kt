@@ -8,7 +8,6 @@ import javax.persistence.*
 @Entity
 @Table(name = "Transferencias", catalog = "")
 @JsonIgnoreProperties("hibernateLazyInitializer", "handler")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 data class TransferEntity (
     @get:Id
     @get:GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -24,23 +23,23 @@ data class TransferEntity (
     var transferDate: Date? = null,
 
     @get:ManyToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "timeOrigemId", referencedColumnName = "id",nullable=false)
+    @get:JoinColumn(name = "timeOrigemId", referencedColumnName = "id")
     var originTeam: TeamEntity? = null,
     @get:ManyToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "timeDestinoId", referencedColumnName = "id",nullable=false)
+    @get:JoinColumn(name = "timeDestinoId", referencedColumnName = "id")
     var destinyTeam: TeamEntity? = null,
     @get:ManyToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "jogadorId", referencedColumnName = "id",nullable=false)
+    @get:JoinColumn(name = "jogadorId", referencedColumnName = "id")
     var player: PlayerEntity? = null,
 
-    @get:Column(name = "timeOrigemHistoricoId")
+    @get:Column(name = "timeOrigemHistorico")
     @JsonIgnore
-    var originTeamHistoryId: Int? = null,
-    @get:Column(name = "timeDestinoHistoricoId")
+    var originTeamHistory: String? = null,
+    @get:Column(name = "timeDestinoHistorico")
     @JsonIgnore
-    var destinyTeamHistoryId: Int? = null,
-    @get:Column(name = "jogadorHistoricoId")
+    var destinyTeamHistory: String? = null,
+    @get:Column(name = "jogadorHistorico")
     @JsonIgnore
-    var playerHistoryId: Int? = null
+    var playerHistory: String? = null
 
 )
