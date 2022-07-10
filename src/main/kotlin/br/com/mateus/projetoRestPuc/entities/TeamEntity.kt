@@ -38,10 +38,24 @@ data class TeamEntity (
     var originTransfers: List<TransferEntity>? = null,
     @get:OneToMany(mappedBy = "destinyTeam", cascade = [CascadeType.REMOVE])
     @JsonIgnore
-    var destinyTransfers: List<TransferEntity>? = null
+    var destinyTransfers: List<TransferEntity>? = null,
 
+    @get:OneToMany(mappedBy = "matchAwayTeam", cascade = [CascadeType.REMOVE])
+    @JsonIgnore
+    var awayMatches: List<MatchEntity>? = null,
+    @get:OneToMany(mappedBy = "matchHomeTeam", cascade = [CascadeType.REMOVE])
+    @JsonIgnore
+    var homeMatches: List<MatchEntity>? = null,
 
-) {
+    @get:ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @get:JoinTable(
+        name = "TimesTorneio",
+        joinColumns = [JoinColumn(name = "timeId", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "torneioId", referencedColumnName = "id")]
+    )
+    var tournamentTeams: List<TournamentEntity>? = null
+
+    ) {
 
     @PreRemove
     fun removeTeam() {

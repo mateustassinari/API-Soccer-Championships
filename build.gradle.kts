@@ -38,6 +38,7 @@ dependencies {
     implementation ("io.springfox:springfox-swagger-ui:2.9.2")
     implementation ("io.springfox:springfox-bean-validators:2.9.2")
     implementation ("org.bytedeco:javacv-platform:1.3.1")
+    implementation("org.projectlombok:lombok:1.18.22")
     runtimeOnly("mysql:mysql-connector-java:8.0.27")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
