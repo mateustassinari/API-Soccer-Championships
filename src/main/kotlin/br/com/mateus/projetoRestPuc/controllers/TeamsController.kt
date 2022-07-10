@@ -109,8 +109,8 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
         return ResponseEntity.noContent().build()
     }
 
-    @ApiOperation("Delete a Team and yours Transfers")
-    @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Team and Transfers"),
+    @ApiOperation("Delete a Team")
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Team"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.DELETE])
