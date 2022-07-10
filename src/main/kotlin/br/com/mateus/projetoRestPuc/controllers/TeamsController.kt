@@ -6,6 +6,7 @@ import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.response.Response
 import br.com.mateus.projetoRestPuc.services.PlayerService
 import br.com.mateus.projetoRestPuc.services.TeamService
+import br.com.mateus.projetoRestPuc.utils.Utils
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
@@ -21,7 +22,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/teams")
-class TeamsController(val teamService: TeamService, val playerService: PlayerService) {
+class TeamsController(val teamService: TeamService, val playerService: PlayerService, val utils: Utils) {
 
     @ApiOperation("Return Teams")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
@@ -59,20 +60,16 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
     @RequestMapping(method = [RequestMethod.POST])
     fun addTeam(@Valid @RequestBody teamDto: TeamDto): ResponseEntity<Response<TeamEntity>> {
         val response: Response<TeamEntity> = Response()
-        var date: Date? = null
 
         val teamExists: Optional<TeamEntity> = teamService.findTeamByNameAndUfAndCity(teamDto.name!!,teamDto.uf!!,teamDto.city!!)
         if(!teamExists.isEmpty) {
             response.erros.add("Team already exists!")
         }
 
-        try {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            format.isLenient = false
-            date = format.parse(teamDto.foundingDate)
-        } catch (e: Exception) {
-            response.erros.add("foundingDate is must be in format dd/MM/yyyy and be valid!")
-        }
+        val date: Date? = utils.parseDate(teamDto.foundingDate!!)
+
+        if(date == null)
+            response.erros.add("foundingDate must be in format dd/MM/yyyy and be valid!")
 
         if(response.erros.size>0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
@@ -137,7 +134,6 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
     @RequestMapping(value = ["/{id}/players"], method = [RequestMethod.POST])
     fun addTeamPlayer(@PathVariable id: Int?, @Valid @RequestBody playerDto: PlayerDto): ResponseEntity<Response<PlayerEntity>> {
         val response: Response<PlayerEntity> = Response()
-        var date: Date? = null
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
@@ -148,13 +144,11 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
             response.erros.add("Player already exists!")
         }
 
-        try {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            format.isLenient = false
-            date = format.parse(playerDto.birthDate)
-        } catch (e: Exception) {
-            response.erros.add("birthDate is must be in format dd/MM/yyyy and be valid!")
-        }
+        val date: Date? = utils.parseDate(playerDto.birthDate!!)
+
+        if(date == null)
+            response.erros.add("birthDate must be in format dd/MM/yyyy and be valid!")
+
 
         val team: Optional<TeamEntity> = teamService.findTeamById(id)
         if(team.isEmpty) {

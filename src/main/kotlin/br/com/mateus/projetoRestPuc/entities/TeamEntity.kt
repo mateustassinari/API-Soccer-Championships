@@ -47,12 +47,9 @@ data class TeamEntity (
     @JsonIgnore
     var homeMatches: List<MatchEntity>? = null,
 
-    @get:ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    @get:JoinTable(
-        name = "TimesTorneio",
-        joinColumns = [JoinColumn(name = "timeId", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "torneioId", referencedColumnName = "id")]
-    )
+
+    @get:ManyToMany(mappedBy="teamsTournament")
+    @JsonIgnore
     var tournamentTeams: List<TournamentEntity>? = null
 
     ) {

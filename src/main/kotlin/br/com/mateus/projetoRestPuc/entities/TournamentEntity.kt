@@ -28,33 +28,19 @@ data class TournamentEntity (
     var endDate: Date? = null,
     @get:Basic
     @get:Column(name = "qtdTime", nullable = false)
-    var qtdTime: Int? = null,
+    var qtdTeams: Int? = null,
 
     @get:OneToMany(mappedBy = "matchTournament")
     @JsonIgnore
     var matches: List<MatchEntity>? = null,
 
-    @get:ManyToMany(mappedBy="tournamentTeams")
+    @get:ManyToMany(cascade = [CascadeType.MERGE, CascadeType.PERSIST], fetch = FetchType.LAZY)
+    @get:JoinTable(
+        name = "TimesTorneio",
+        joinColumns = [JoinColumn(name = "timeId", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "torneioId", referencedColumnName = "id")]
+    )
     var teamsTournament: List<TeamEntity>? = null
 
-
-/*
-    @get:OneToMany(mappedBy = "playerTeam")
-    @JsonIgnore
-    var players: List<PlayerEntity>? = null,
-    @get:OneToMany(mappedBy = "originTeam", cascade = [CascadeType.REMOVE])
-    @JsonIgnore
-    var originTransfers: List<TransferEntity>? = null,
-    @get:OneToMany(mappedBy = "destinyTeam", cascade = [CascadeType.REMOVE])
-    @JsonIgnore
-    var destinyTransfers: List<TransferEntity>? = null
-*/
-
-) /*{
-
-    @PreRemove
-    fun removeTeam() {
-        players?.forEach { player -> player.playerTeam = null }
-    }
-}*/
+)
 

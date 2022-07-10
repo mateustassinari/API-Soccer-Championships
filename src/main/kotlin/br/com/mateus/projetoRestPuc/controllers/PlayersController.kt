@@ -8,6 +8,7 @@ import br.com.mateus.projetoRestPuc.response.Response
 import br.com.mateus.projetoRestPuc.services.PlayerService
 import br.com.mateus.projetoRestPuc.services.TeamService
 import br.com.mateus.projetoRestPuc.services.TransferService
+import br.com.mateus.projetoRestPuc.utils.Utils
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
@@ -16,14 +17,13 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.validation.Valid
 
 
 @RestController
 @RequestMapping("/players")
-class PlayersController(val playerService: PlayerService, val transferService: TransferService, val teamService: TeamService) {
+class PlayersController(val playerService: PlayerService, val transferService: TransferService, val teamService: TeamService, val utils: Utils) {
 
     @ApiOperation("Return Players")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
@@ -61,20 +61,16 @@ class PlayersController(val playerService: PlayerService, val transferService: T
     @RequestMapping(method = [RequestMethod.POST])
     fun addPlayer(@Valid @RequestBody playerDto: PlayerDto): ResponseEntity<Response<PlayerEntity>> {
         val response: Response<PlayerEntity> = Response()
-        var date: Date? = null
 
         val playerExists: Optional<PlayerEntity> = playerService.findPlayerByCode(playerDto.codePlayer!!)
         if(!playerExists.isEmpty) {
             response.erros.add("Player already exists!")
         }
 
-        try {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            format.isLenient = false
-            date = format.parse(playerDto.birthDate)
-        } catch (e: Exception) {
-            response.erros.add("birthDate is must be in format dd/MM/yyyy and be valid!")
-        }
+        val date: Date? = utils.parseDate(playerDto.birthDate!!)
+
+        if(date == null)
+            response.erros.add("birthDate must be in format dd/MM/yyyy and be valid!")
 
         if(response.erros.size>0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
@@ -138,7 +134,6 @@ class PlayersController(val playerService: PlayerService, val transferService: T
     @RequestMapping(value = ["/{id}/transfers"], method = [RequestMethod.POST])
     fun addTransferPlayer(@PathVariable id: Int?, @Valid @RequestBody transferDto: TransferDto): ResponseEntity<Response<TransferEntity>> {
         val response: Response<TransferEntity> = Response()
-        var date: Date? = null
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
@@ -148,7 +143,7 @@ class PlayersController(val playerService: PlayerService, val transferService: T
             response.erros.add("Value must be higher than 0!")
         }
 
-        var player: Optional<PlayerEntity> = playerService.findPlayerById(id)
+        val player: Optional<PlayerEntity> = playerService.findPlayerById(id)
         if(player.isEmpty) {
             response.erros.add("Player not exists!")
         }
@@ -158,17 +153,15 @@ class PlayersController(val playerService: PlayerService, val transferService: T
             response.erros.add("Team not exists!")
         }
 
-        if(team.get().id == player.get().id) {
+        if(!team.isEmpty && team.get().id == player.get().id) {
             response.erros.add("Player it's already from that team!")
         }
 
-        try {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            format.isLenient = false
-            date = format.parse(transferDto.transferDate)
-        } catch (e: Exception) {
-            response.erros.add("transferDate is must be in format dd/MM/yyyy and be valid!")
-        }
+        val date: Date? = utils.parseDate(transferDto.transferDate!!)
+
+        if(date == null)
+            response.erros.add("transferDate must be in format dd/MM/yyyy and be valid!")
+
 
         if(response.erros.size>0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)

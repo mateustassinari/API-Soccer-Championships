@@ -3,6 +3,7 @@ package br.com.mateus.projetoRestPuc.controllers
 import br.com.mateus.projetoRestPuc.dtos.*
 import br.com.mateus.projetoRestPuc.entities.TransferEntity
 import br.com.mateus.projetoRestPuc.services.TransferService
+import br.com.mateus.projetoRestPuc.utils.Utils
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
@@ -15,7 +16,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/transfers")
-class TransfersController(val transferService: TransferService) {
+class TransfersController(val transferService: TransferService, val utils: Utils) {
 
     @ApiOperation("Return Transfer by id")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
@@ -62,13 +63,12 @@ class TransfersController(val transferService: TransferService) {
 
         if(!transferDto.transferDate.equals("") && transferDto.transferDate != null) {
 
-            try {
-                val format = SimpleDateFormat("dd/MM/yyyy")
-                format.isLenient = false
-                val date = format.parse(transferDto.transferDate)
+            val date = utils.parseDate(transferDto.transferDate!!)
+
+            if(date != null) {
                 transferExists.get().transferDate = java.sql.Date(date.time)
-            } catch (e: Exception) {
-                return ResponseEntity.badRequest().body("transferDate is must be in format dd/MM/yyyy and be valid!")
+            } else {
+                return ResponseEntity.badRequest().body("transferDate must be in format dd/MM/yyyy and be valid!")
             }
 
         }
