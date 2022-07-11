@@ -50,13 +50,14 @@ data class TeamEntity (
 
     @get:ManyToMany(mappedBy="teamsTournament")
     @JsonIgnore
-    var tournamentTeams: List<TournamentEntity>? = null
+    var tournamentTeams: MutableList<TournamentEntity>? = null
 
     ) {
 
     @PreRemove
     fun removeTeam() {
         players?.forEach { player -> player.playerTeam = null }
+        tournamentTeams?.forEach { t -> this.let { t.removeTeamTournament(it) } }
     }
 }
 

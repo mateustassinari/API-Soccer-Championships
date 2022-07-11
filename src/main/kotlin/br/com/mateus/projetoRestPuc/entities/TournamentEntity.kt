@@ -34,13 +34,18 @@ data class TournamentEntity (
     @JsonIgnore
     var matches: List<MatchEntity>? = null,
 
-    @get:ManyToMany(cascade = [CascadeType.MERGE, CascadeType.PERSIST], fetch = FetchType.LAZY)
+    @get:ManyToMany(cascade = [CascadeType.MERGE, CascadeType.PERSIST])
     @get:JoinTable(
         name = "TimesTorneio",
-        joinColumns = [JoinColumn(name = "timeId", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "torneioId", referencedColumnName = "id")]
+        joinColumns = [JoinColumn(name = "torneioId", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "timeId", referencedColumnName = "id")]
     )
-    var teamsTournament: List<TeamEntity>? = null
+    var teamsTournament: MutableList<TeamEntity>? = null
 
-)
+) {
+    fun removeTeamTournament(teamToDelete : TeamEntity) {
+        teamsTournament = teamsTournament?.filter { team -> team.id != teamToDelete.id }?.toMutableList()
+        teamToDelete.tournamentTeams = teamToDelete.tournamentTeams?.filter { tournament -> tournament.id != this.id }?.toMutableList()
+    }
+}
 

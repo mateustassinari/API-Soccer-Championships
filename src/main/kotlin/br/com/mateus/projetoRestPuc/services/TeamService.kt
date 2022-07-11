@@ -1,6 +1,7 @@
 package br.com.mateus.projetoRestPuc.services
 
 import br.com.mateus.projetoRestPuc.dtos.TeamDto
+import br.com.mateus.projetoRestPuc.dtos.TeamTournamentsDto
 import br.com.mateus.projetoRestPuc.dtos.TeamTransfersDto
 import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
@@ -24,5 +25,7 @@ interface TeamService {
     fun findTeamPlayers(id: Int): List<PlayerEntity>
 
     fun findTeamTransfers(id: Int): TeamTransfersDto
+
+    fun findTeamTournaments(id: Int): List<TeamTournamentsDto>
 
 }

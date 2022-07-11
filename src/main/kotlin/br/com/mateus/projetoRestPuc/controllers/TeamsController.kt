@@ -106,7 +106,7 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
         return ResponseEntity.noContent().build()
     }
 
-    @ApiOperation("Delete a Team and yours Transfers")
+    @ApiOperation("Delete a Team, yours Transfers and their tournament participations")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Team and Transfers"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 500, message = "Unexpected error")] )
@@ -198,6 +198,22 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
         val transfers: TeamTransfersDto = teamService.findTeamTransfers(id)
 
         return ResponseEntity.ok(transfers)
+    }
+
+    @ApiOperation("Return Tournaments of a Team by id")
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
+        ApiResponse(code = 400, message = "Parameter not informed"),
+        ApiResponse(code = 500, message = "Unexpected error")] )
+    @RequestMapping(value = ["/{id}/tournaments"],method = [RequestMethod.GET])
+    fun findTournamentsTeam(@PathVariable id: Int?): ResponseEntity<List<TeamTournamentsDto>> {
+
+        if (id == null) {
+            return ResponseEntity.badRequest().build()
+        }
+
+        val tournaments: List<TeamTournamentsDto> = teamService.findTeamTournaments(id)
+
+        return ResponseEntity.ok(tournaments)
     }
 
 }

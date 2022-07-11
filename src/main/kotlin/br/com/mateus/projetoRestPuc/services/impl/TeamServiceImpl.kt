@@ -1,6 +1,7 @@
 package br.com.mateus.projetoRestPuc.services.impl
 
 import br.com.mateus.projetoRestPuc.dtos.TeamDto
+import br.com.mateus.projetoRestPuc.dtos.TeamTournamentsDto
 import br.com.mateus.projetoRestPuc.dtos.TeamTransfersDto
 import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 @Service
@@ -53,6 +55,29 @@ class TeamServiceImpl(val teamRepository: TeamRepository): TeamService {
         teamTransfersDto.originTransfers = team.get().originTransfers
 
         return teamTransfersDto
+
+    }
+
+    override fun findTeamTournaments(id: Int): List<TeamTournamentsDto> {
+        val listTeamTournaments = ArrayList<TeamTournamentsDto>()
+        var teamTournamentsDto : TeamTournamentsDto
+        val team = teamRepository.findById(id)
+        if(team.isEmpty) {
+            return listTeamTournaments
+        }
+
+
+        team.get().tournamentTeams?.forEach { tournament ->
+            teamTournamentsDto = TeamTournamentsDto()
+            teamTournamentsDto.id = tournament.id;
+            teamTournamentsDto.name = tournament.name;
+            teamTournamentsDto.startDate = tournament.startDate;
+            teamTournamentsDto.endDate = tournament.endDate;
+            teamTournamentsDto.qtdTeams = tournament.qtdTeams;
+            listTeamTournaments.add(teamTournamentsDto)
+        }
+
+        return listTeamTournaments
 
     }
 
