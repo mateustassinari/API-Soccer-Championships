@@ -1,13 +1,15 @@
 package br.com.mateus.projetoRestPuc
 
-import org.springframework.boot.SpringApplication
+import org.springframework.amqp.rabbit.annotation.EnableRabbit
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
+@EnableRabbit
 @SpringBootApplication
 class ProjetoRestApplication
 
 
 fun main(args: Array<String>) {
-    SpringApplication.run(ProjetoRestApplication::class.java, *args)
+    runApplication<ProjetoRestApplication>(*args)
 }
 

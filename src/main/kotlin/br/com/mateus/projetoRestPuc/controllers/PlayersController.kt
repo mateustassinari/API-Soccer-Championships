@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
@@ -88,6 +89,7 @@ class PlayersController(val playerService: PlayerService, val transferService: T
     @ApiOperation("Update Name of a Player")
     @ApiResponses(value = [ApiResponse(code = 204, message = "Updated Player"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
+        ApiResponse(code = 404, message = "Player not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.PATCH])
     fun updatePlayer(@Valid @RequestBody playerDto: PlayerUpdDto, @PathVariable id: Int?): ResponseEntity<String> {
@@ -110,8 +112,10 @@ class PlayersController(val playerService: PlayerService, val transferService: T
     @ApiOperation("Delete a Player and yours Transfers")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Player and Transfers"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
+        ApiResponse(code = 404, message = "Player not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.DELETE])
+    @Secured("ROLE_ADMIN")
     fun delPlayer(@PathVariable id: Int?): ResponseEntity<Response<Void>> {
 
         if (id == null) {
@@ -183,12 +187,18 @@ class PlayersController(val playerService: PlayerService, val transferService: T
     @ApiOperation("Return Transfers of a Player by id")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
         ApiResponse(code = 400, message = "Parameter not informed"),
+        ApiResponse(code = 404, message = "Player not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}/transfers"],method = [RequestMethod.GET])
     fun findTransfersPlayer(@PathVariable id: Int?): ResponseEntity<List<TransferEntity>> {
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
+        }
+
+        val playerExists = playerService.findPlayerById(id)
+        if(playerExists.isEmpty) {
+            return ResponseEntity.notFound().build()
         }
 
         val transfers: List<TransferEntity> = playerService.findPlayerTransfers(id)

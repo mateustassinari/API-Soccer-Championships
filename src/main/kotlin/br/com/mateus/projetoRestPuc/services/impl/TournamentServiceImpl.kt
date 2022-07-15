@@ -1,6 +1,7 @@
 package br.com.mateus.projetoRestPuc.services.impl
 
 import br.com.mateus.projetoRestPuc.dtos.TournamentDto
+import br.com.mateus.projetoRestPuc.entities.MatchEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.entities.TournamentEntity
 import br.com.mateus.projetoRestPuc.repositories.TournamentRepository
@@ -36,6 +37,26 @@ class TournamentServiceImpl(val tournamentRepository: TournamentRepository, val 
 
         return TournamentEntity(null, tournamentDto.name, java.sql.Date(starDate.time), java.sql.Date(endDate.time), tournamentDto.qtdTeams, null,teams)
     }
+
+    override fun addTeamTournament(team : TeamEntity, tournament: TournamentEntity) : TournamentEntity {
+        tournament.teamsTournament?.add(team)
+        return tournamentRepository.save(tournament)
+    }
+
+    override fun deleteTeamTournament(team : TeamEntity, tournament: TournamentEntity) {
+        tournament.teamsTournament?.remove(team)
+        tournamentRepository.save(tournament)
+    }
+
+    override fun findTournamentMatches(id: Int): List<MatchEntity> {
+        val tournament = tournamentRepository.findById(id)
+        if(tournament.isEmpty || tournament.get().matches == null) {
+            return arrayListOf()
+        }
+
+        return tournament.get().matches!!
+    }
+
 
 
 }

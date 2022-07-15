@@ -3,6 +3,7 @@ package br.com.mateus.projetoRestPuc.services
 import br.com.mateus.projetoRestPuc.dtos.TeamDto
 import br.com.mateus.projetoRestPuc.dtos.TeamTournamentsDto
 import br.com.mateus.projetoRestPuc.dtos.TeamTransfersDto
+import br.com.mateus.projetoRestPuc.entities.MatchEntity
 import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.entities.TransferEntity
@@ -27,5 +28,7 @@ interface TeamService {
     fun findTeamTransfers(id: Int): TeamTransfersDto
 
     fun findTeamTournaments(id: Int): List<TeamTournamentsDto>
+
+    fun findMatchesTeam(id: Int, type: String): List<MatchEntity>
 
 }

@@ -41,6 +41,7 @@ class TransfersController(val transferService: TransferService, val utils: Utils
     @ApiOperation("Update a Transfer")
     @ApiResponses(value = [ApiResponse(code = 204, message = "Updated Transfer"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
+        ApiResponse(code = 404, message = "Transfer not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.PATCH])
     fun updateTransfer(@Valid @RequestBody transferDto: TransferUpdDto, @PathVariable id: Int?): ResponseEntity<String> {

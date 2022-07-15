@@ -3,6 +3,7 @@ package br.com.mateus.projetoRestPuc.services.impl
 import br.com.mateus.projetoRestPuc.dtos.TeamDto
 import br.com.mateus.projetoRestPuc.dtos.TeamTournamentsDto
 import br.com.mateus.projetoRestPuc.dtos.TeamTransfersDto
+import br.com.mateus.projetoRestPuc.entities.MatchEntity
 import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.entities.TransferEntity
@@ -67,7 +68,7 @@ class TeamServiceImpl(val teamRepository: TeamRepository): TeamService {
         }
 
 
-        team.get().tournamentTeams?.forEach { tournament ->
+        team.get().tournamentsTeam?.forEach { tournament ->
             teamTournamentsDto = TeamTournamentsDto()
             teamTournamentsDto.id = tournament.id;
             teamTournamentsDto.name = tournament.name;
@@ -78,6 +79,16 @@ class TeamServiceImpl(val teamRepository: TeamRepository): TeamService {
         }
 
         return listTeamTournaments
+
+    }
+
+    override fun findMatchesTeam(id: Int, type: String): List<MatchEntity> {
+        val team = teamRepository.findById(id)
+        if(team.isEmpty || (type == "home" && team.get().homeMatches == null) || (type == "away" && team.get().awayMatches == null)) {
+            return arrayListOf()
+        }
+
+        return if(type == "home") { team.get().homeMatches!! } else { team.get().awayMatches!! }
 
     }
 

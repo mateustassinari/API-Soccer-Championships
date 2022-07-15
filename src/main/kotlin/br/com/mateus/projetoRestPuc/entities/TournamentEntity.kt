@@ -43,9 +43,9 @@ data class TournamentEntity (
     var teamsTournament: MutableList<TeamEntity>? = null
 
 ) {
-    fun removeTeamTournament(teamToDelete : TeamEntity) {
+    fun removeTournamentsTeam(teamToDelete : TeamEntity) {
         teamsTournament = teamsTournament?.filter { team -> team.id != teamToDelete.id }?.toMutableList()
-        teamToDelete.tournamentTeams = teamToDelete.tournamentTeams?.filter { tournament -> tournament.id != this.id }?.toMutableList()
+        teamToDelete.tournamentsTeam = teamToDelete.tournamentsTeam?.filter { tournament -> tournament.id != this.id }?.toMutableList()
     }
 }
 

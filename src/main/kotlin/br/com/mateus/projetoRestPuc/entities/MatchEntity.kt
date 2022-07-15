@@ -15,35 +15,19 @@ data class MatchEntity (
     var id: Int? = null,
     @get:Basic
     @get:Column(name = "resultado", nullable = false)
-    var resultado: Int? = null,
+    var result: String? = null,
 
     @get:ManyToOne(fetch = FetchType.LAZY)
     @get:JoinColumn(name = "torneioId", referencedColumnName = "id")
+    @JsonIgnore
     var matchTournament: TournamentEntity? = null,
 
     @get:ManyToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "timeForaId", referencedColumnName = "id")
-    var matchAwayTeam: TeamEntity? = null,
+    @get:JoinColumn(name = "timeCasaId", referencedColumnName = "id")
+    var matchHomeTeam: TeamEntity? = null,
 
     @get:ManyToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "timeCasaId", referencedColumnName = "id")
-    var matchHomeTeam: TeamEntity? = null
-/*
-    @get:OneToMany(mappedBy = "playerTeam")
-    @JsonIgnore
-    var players: List<PlayerEntity>? = null,
-    @get:OneToMany(mappedBy = "originTeam", cascade = [CascadeType.REMOVE])
-    @JsonIgnore
-    var originTransfers: List<TransferEntity>? = null,
-    @get:OneToMany(mappedBy = "destinyTeam", cascade = [CascadeType.REMOVE])
-    @JsonIgnore
-    var destinyTransfers: List<TransferEntity>? = null
-*/
+    @get:JoinColumn(name = "timeForaId", referencedColumnName = "id")
+    var matchAwayTeam: TeamEntity? = null
 
-) /*{
-
-    @PreRemove
-    fun removeTeam() {
-        players?.forEach { player -> player.playerTeam = null }
-    }
-}*/
+)
