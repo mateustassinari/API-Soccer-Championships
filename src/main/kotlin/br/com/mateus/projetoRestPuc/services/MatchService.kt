@@ -10,8 +10,6 @@ interface MatchService {
 
     fun findMatchById(id: Int): Optional<MatchEntity>
 
-    fun findMatches(): List<MatchEntity>
-
     fun persist(match: MatchEntity): MatchEntity
 
     fun delete(id: Int)

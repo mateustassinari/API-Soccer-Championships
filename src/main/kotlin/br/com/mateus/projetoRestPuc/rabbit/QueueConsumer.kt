@@ -6,8 +6,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class QueueConsumer {
+
     @RabbitListener(queues = ["\${queue.name}"])
     fun receive(@Payload fileBody: String) {
-        println("Consumidor recebeu a mensagem $fileBody do produtor")
+        println("Consumer received the message ' $fileBody ' of producer")
     }
+
 }

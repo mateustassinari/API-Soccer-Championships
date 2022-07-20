@@ -1,6 +1,6 @@
 package br.com.mateus.projetoRestPuc.security
 
-import br.com.mateus.projectREST.dtos.TokenDto
+import br.com.mateus.projetoRestPuc.dtos.TokenDto
 import br.com.mateus.projetoRestPuc.dtos.CredentialsDto
 import br.com.mateus.projetoRestPuc.response.Response
 import com.fasterxml.jackson.databind.ObjectMapper

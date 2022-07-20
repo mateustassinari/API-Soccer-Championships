@@ -1,6 +1,8 @@
 package br.com.mateus.projetoRestPuc.controllers
 
-import br.com.mateus.projetoRestPuc.dtos.*
+import br.com.mateus.projetoRestPuc.dtos.PlayerDto
+import br.com.mateus.projetoRestPuc.dtos.PlayerUpdDto
+import br.com.mateus.projetoRestPuc.dtos.TransferDto
 import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.entities.TransferEntity
@@ -14,7 +16,6 @@ import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
@@ -87,12 +88,13 @@ class PlayersController(val playerService: PlayerService, val transferService: T
     }
 
     @ApiOperation("Update Name of a Player")
-    @ApiResponses(value = [ApiResponse(code = 204, message = "Updated Player"),
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Updated Player"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 404, message = "Player not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.PATCH])
-    fun updatePlayer(@Valid @RequestBody playerDto: PlayerUpdDto, @PathVariable id: Int?): ResponseEntity<String> {
+    fun updatePlayer(@Valid @RequestBody playerDto: PlayerUpdDto, @PathVariable id: Int?): ResponseEntity<Response<PlayerEntity>> {
+        val response: Response<PlayerEntity> = Response()
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
@@ -106,7 +108,8 @@ class PlayersController(val playerService: PlayerService, val transferService: T
         playerExists.get().name = playerDto.name
 
         playerService.persist(playerExists.get())
-        return ResponseEntity.noContent().build()
+        response.data=playerExists.get()
+        return ResponseEntity.ok().body(response)
     }
 
     @ApiOperation("Delete a Player and yours Transfers")
@@ -115,7 +118,6 @@ class PlayersController(val playerService: PlayerService, val transferService: T
         ApiResponse(code = 404, message = "Player not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.DELETE])
-    @Secured("ROLE_ADMIN")
     fun delPlayer(@PathVariable id: Int?): ResponseEntity<Response<Void>> {
 
         if (id == null) {

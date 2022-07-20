@@ -15,7 +15,7 @@ class QueueSender {
     @Autowired
     private val queue: Queue? = null
 
-    fun send(order: String?) {
-        rabbitTemplate!!.convertAndSend(queue!!.name, order!!)
+    fun send(message: String?) {
+        rabbitTemplate!!.convertAndSend(queue!!.name, message!!)
     }
 }

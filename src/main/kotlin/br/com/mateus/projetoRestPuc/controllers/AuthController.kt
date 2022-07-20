@@ -1,6 +1,6 @@
 package br.com.mateus.projetoRestPuc.controllers
 
-import br.com.mateus.projectREST.dtos.TokenDto
+import br.com.mateus.projetoRestPuc.dtos.TokenDto
 import br.com.mateus.projetoRestPuc.dtos.LoginDto
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse

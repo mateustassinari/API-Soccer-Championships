@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.validation.Valid
 
@@ -86,12 +85,13 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
     }
 
     @ApiOperation("Update Name of a Team")
-    @ApiResponses(value = [ApiResponse(code = 204, message = "Updated Team"),
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Updated Team"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 404, message = "Team not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.PATCH])
-    fun updateTeam(@Valid @RequestBody teamDto: TeamUpdDto, @PathVariable id: Int?): ResponseEntity<String> {
+    fun updateTeam(@Valid @RequestBody teamDto: TeamUpdDto, @PathVariable id: Int?): ResponseEntity<Response<TeamEntity>> {
+        val response: Response<TeamEntity> = Response()
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
@@ -105,7 +105,8 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
         teamExists.get().name = teamDto.name
 
         teamService.persist(teamExists.get())
-        return ResponseEntity.noContent().build()
+        response.data=teamExists.get()
+        return ResponseEntity.ok().body(response)
     }
 
     @ApiOperation("Delete a Team, yours Transfers and their Tournament Participations")
@@ -251,7 +252,7 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
 
         val response: Response<List<MatchEntity>> = Response()
 
-        if(type == "" || type != "home" || type != "away") {
+        if(type == "" || (type != "home" && type != "away")) {
             response.erros.add("Type must be home or away")
             return ResponseEntity.badRequest().body(response)
         }

@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull
 
 data class TransferDto (
 
-    @get:NotNull(message="Value cannot be empty")
+    @get:NotNull(message="Value cannot be null")
     var value: Double? = null,
 
     @get:NotEmpty(message="TransferDate cannot be empty")

@@ -12,6 +12,7 @@ import springfox.documentation.service.*
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spi.service.contexts.SecurityContext
 import springfox.documentation.spring.web.plugins.Docket
+import springfox.documentation.swagger.web.OperationsSorter
 import springfox.documentation.swagger.web.UiConfiguration
 import springfox.documentation.swagger.web.UiConfigurationBuilder
 import springfox.documentation.swagger2.annotations.EnableSwagger2
@@ -53,8 +54,8 @@ class SwaggerConfig {
 
     private fun apiInfo(): ApiInfo? {
         return ApiInfo(
-                "API PUC Minas - Brazilian Championship",
-                "API to handle teams, players and league transfers",
+                "API PUC Minas - Soccer Championships",
+                "API to handle teams, players, tournaments, matches and transfers",
                 "Version 1.0",
                 "",
                 Contact("Mateus", "", "mateustassinari18@gmail.com"),
@@ -68,6 +69,7 @@ class SwaggerConfig {
     fun uiConfig(): UiConfiguration? {
         return UiConfigurationBuilder.builder()
                 .defaultModelsExpandDepth(-1)
+                .operationsSorter(OperationsSorter.METHOD)
                 .build()
     }
 

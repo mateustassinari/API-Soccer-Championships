@@ -2,6 +2,7 @@ package br.com.mateus.projetoRestPuc.controllers
 
 import br.com.mateus.projetoRestPuc.dtos.*
 import br.com.mateus.projetoRestPuc.entities.TransferEntity
+import br.com.mateus.projetoRestPuc.response.Response
 import br.com.mateus.projetoRestPuc.services.TransferService
 import br.com.mateus.projetoRestPuc.utils.Utils
 import io.swagger.annotations.ApiOperation
@@ -9,7 +10,6 @@ import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.validation.Valid
 
@@ -39,12 +39,13 @@ class TransfersController(val transferService: TransferService, val utils: Utils
 
 
     @ApiOperation("Update a Transfer")
-    @ApiResponses(value = [ApiResponse(code = 204, message = "Updated Transfer"),
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Updated Transfer"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 404, message = "Transfer not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.PATCH])
-    fun updateTransfer(@Valid @RequestBody transferDto: TransferUpdDto, @PathVariable id: Int?): ResponseEntity<String> {
+    fun updateTransfer(@Valid @RequestBody transferDto: TransferUpdDto, @PathVariable id: Int?): ResponseEntity<Response<TransferEntity>> {
+        val response: Response<TransferEntity> = Response()
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
@@ -57,7 +58,8 @@ class TransfersController(val transferService: TransferService, val utils: Utils
 
         if(transferDto.value != null) {
             if (transferDto.value!! < 0) {
-                return ResponseEntity.badRequest().body("Value must be higher than 0!")
+                response.erros.add("Value must be higher than 0!")
+                return ResponseEntity.badRequest().body(response)
             }
             transferExists.get().value = transferDto.value
         }
@@ -69,13 +71,15 @@ class TransfersController(val transferService: TransferService, val utils: Utils
             if(date != null) {
                 transferExists.get().transferDate = java.sql.Date(date.time)
             } else {
-                return ResponseEntity.badRequest().body("transferDate must be in format dd/MM/yyyy and be valid!")
+                response.erros.add("transferDate must be in format dd/MM/yyyy and be valid!")
+                return ResponseEntity.badRequest().body(response)
             }
 
         }
 
         transferService.persist(transferExists.get())
-        return ResponseEntity.noContent().build()
+        response.data=transferExists.get()
+        return ResponseEntity.ok().body(response)
     }
 
 }

@@ -91,18 +91,12 @@ class SecurityConfig: WebSecurityConfigurerAdapter() {
     @Bean
     fun inMemoryUserDetailsService(): UserDetailsService? {
         val user1: UserDetails = User.builder()
-            .username("teste_all")
+            .username("teste")
             .password("123")
             .roles("ADMIN")
             .passwordEncoder { password -> passwordEncoder().encode(password) }
             .build()
-        val user2: UserDetails = User.builder()
-            .username("teste")
-            .password("123")
-            .roles("NOTDELETE")
-            .passwordEncoder { password -> passwordEncoder().encode(password) }
-            .build()
-        return InMemoryUserDetailsManager(user1,user2)
+        return InMemoryUserDetailsManager(user1)
     }
 
     @Bean

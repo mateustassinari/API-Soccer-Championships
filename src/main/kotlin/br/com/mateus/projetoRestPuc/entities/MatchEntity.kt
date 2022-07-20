@@ -1,9 +1,6 @@
 package br.com.mateus.projetoRestPuc.entities
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
-import io.swagger.annotations.ApiModelProperty
-import java.sql.Date
 import javax.persistence.*
 
 @Entity

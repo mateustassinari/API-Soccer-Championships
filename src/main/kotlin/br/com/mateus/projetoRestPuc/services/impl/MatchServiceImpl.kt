@@ -2,22 +2,18 @@ package br.com.mateus.projetoRestPuc.services.impl
 
 import br.com.mateus.projetoRestPuc.dtos.MatchDto
 import br.com.mateus.projetoRestPuc.entities.MatchEntity
-import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.entities.TournamentEntity
 import br.com.mateus.projetoRestPuc.repositories.MatchRepository
 import br.com.mateus.projetoRestPuc.services.MatchService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.sql.Date
 import java.util.*
 
 @Service
-class MathcServiceImpl(val matchRepository: MatchRepository): MatchService {
+class MatchServiceImpl(val matchRepository: MatchRepository): MatchService {
 
     override fun findMatchById(id: Int): Optional<MatchEntity> = matchRepository.findById(id)
-
-    override fun findMatches(): List<MatchEntity> = matchRepository.findAll()
 
     @Transactional
     override fun persist(match: MatchEntity): MatchEntity = matchRepository.save(match)

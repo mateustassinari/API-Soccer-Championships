@@ -6,7 +6,6 @@ import br.com.mateus.projetoRestPuc.dtos.TeamTransfersDto
 import br.com.mateus.projetoRestPuc.entities.MatchEntity
 import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
-import br.com.mateus.projetoRestPuc.entities.TransferEntity
 import java.util.*
 
 interface TeamService {

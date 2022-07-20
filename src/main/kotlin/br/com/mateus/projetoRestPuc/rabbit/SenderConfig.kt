@@ -9,10 +9,10 @@ import org.springframework.amqp.core.Queue;
 class SenderConfig {
 
     @Value("\${queue.name}")
-    private val message: String? = null
+    private val queueName: String? = null
 
     @Bean
     fun queue(): Queue {
-        return Queue(message, true)
+        return Queue(queueName, true)
     }
 }
