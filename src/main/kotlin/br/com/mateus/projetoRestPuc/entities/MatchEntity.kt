@@ -28,6 +28,10 @@ data class MatchEntity (
 
     @get:ManyToOne(fetch = FetchType.LAZY)
     @get:JoinColumn(name = "timeForaId", referencedColumnName = "id")
-    var matchAwayTeam: TeamEntity? = null
+    var matchAwayTeam: TeamEntity? = null,
+
+    @get:OneToMany(mappedBy = "matchEvent")
+    @JsonIgnore
+    var events: List<EventEntity>? = null
 
 )
