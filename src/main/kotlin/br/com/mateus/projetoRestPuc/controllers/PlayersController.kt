@@ -157,7 +157,7 @@ class PlayersController(val playerService: PlayerService, val transferService: T
             response.erros.add("Team not exists!")
         }
 
-        if(!team.isEmpty && team.get().id == player.get().id) {
+        if(!team.isEmpty && team.get().id == player.get().playerTeam?.id) {
             response.erros.add("Player it's already from that team!")
         }
 
