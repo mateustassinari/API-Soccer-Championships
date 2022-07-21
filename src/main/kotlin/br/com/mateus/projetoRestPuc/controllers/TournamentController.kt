@@ -400,7 +400,7 @@ class TournamentController(val tournamentService: TournamentService, val teamSer
         }
 
 
-        matchService.delete(id)
+        matchService.delete(matchId)
         return ResponseEntity.ok().build()
     }
 
