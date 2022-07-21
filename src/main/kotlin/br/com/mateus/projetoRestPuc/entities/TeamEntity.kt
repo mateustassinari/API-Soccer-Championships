@@ -1,9 +1,7 @@
 package br.com.mateus.projetoRestPuc.entities
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import io.swagger.annotations.ApiModelProperty
 import java.sql.Date
 import javax.persistence.*
@@ -38,14 +36,26 @@ data class TeamEntity (
     var originTransfers: List<TransferEntity>? = null,
     @get:OneToMany(mappedBy = "destinyTeam", cascade = [CascadeType.REMOVE])
     @JsonIgnore
-    var destinyTransfers: List<TransferEntity>? = null
+    var destinyTransfers: List<TransferEntity>? = null,
+
+    @get:OneToMany(mappedBy = "matchAwayTeam", cascade = [CascadeType.REMOVE])
+    @JsonIgnore
+    var awayMatches: List<MatchEntity>? = null,
+    @get:OneToMany(mappedBy = "matchHomeTeam", cascade = [CascadeType.REMOVE])
+    @JsonIgnore
+    var homeMatches: List<MatchEntity>? = null,
 
 
-) {
+    @get:ManyToMany(mappedBy="teamsTournament")
+    @JsonIgnore
+    var tournamentsTeam: MutableList<TournamentEntity>? = null
+
+    ) {
 
     @PreRemove
     fun removeTeam() {
         players?.forEach { player -> player.playerTeam = null }
+        tournamentsTeam?.forEach { t -> this.let { t.removeTournamentsTeam(it) } }
     }
 }
 

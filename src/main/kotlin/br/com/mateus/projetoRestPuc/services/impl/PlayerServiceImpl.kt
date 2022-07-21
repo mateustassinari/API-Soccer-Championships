@@ -5,7 +5,6 @@ import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.entities.TransferEntity
 import br.com.mateus.projetoRestPuc.repositories.PlayerRepository
-import br.com.mateus.projetoRestPuc.repositories.TeamRepository
 import br.com.mateus.projetoRestPuc.services.PlayerService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,7 +12,7 @@ import java.sql.Date
 import java.util.*
 
 @Service
-class PlayerServiceImpl(val playerRepository: PlayerRepository, val teamRepository: TeamRepository): PlayerService {
+class PlayerServiceImpl(val playerRepository: PlayerRepository): PlayerService {
 
     override fun findPlayerById(id: Int): Optional<PlayerEntity> = playerRepository.findById(id)
 

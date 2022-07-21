@@ -1,11 +1,13 @@
 package br.com.mateus.projetoRestPuc.controllers
 
 import br.com.mateus.projetoRestPuc.dtos.*
+import br.com.mateus.projetoRestPuc.entities.MatchEntity
 import br.com.mateus.projetoRestPuc.entities.PlayerEntity
 import br.com.mateus.projetoRestPuc.entities.TeamEntity
 import br.com.mateus.projetoRestPuc.response.Response
 import br.com.mateus.projetoRestPuc.services.PlayerService
 import br.com.mateus.projetoRestPuc.services.TeamService
+import br.com.mateus.projetoRestPuc.utils.Utils
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
@@ -14,14 +16,13 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.validation.Valid
 
 
 @RestController
 @RequestMapping("/teams")
-class TeamsController(val teamService: TeamService, val playerService: PlayerService) {
+class TeamsController(val teamService: TeamService, val playerService: PlayerService, val utils: Utils) {
 
     @ApiOperation("Return Teams")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
@@ -59,20 +60,16 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
     @RequestMapping(method = [RequestMethod.POST])
     fun addTeam(@Valid @RequestBody teamDto: TeamDto): ResponseEntity<Response<TeamEntity>> {
         val response: Response<TeamEntity> = Response()
-        var date: Date? = null
 
         val teamExists: Optional<TeamEntity> = teamService.findTeamByNameAndUfAndCity(teamDto.name!!,teamDto.uf!!,teamDto.city!!)
         if(!teamExists.isEmpty) {
             response.erros.add("Team already exists!")
         }
 
-        try {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            format.isLenient = false
-            date = format.parse(teamDto.foundingDate)
-        } catch (e: Exception) {
-            response.erros.add("foundingDate is must be in format dd/MM/yyyy and be valid!")
-        }
+        val date: Date? = utils.parseDate(teamDto.foundingDate!!)
+
+        if(date == null)
+            response.erros.add("foundingDate must be in format dd/MM/yyyy and be valid!")
 
         if(response.erros.size>0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
@@ -88,11 +85,13 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
     }
 
     @ApiOperation("Update Name of a Team")
-    @ApiResponses(value = [ApiResponse(code = 204, message = "Updated Team"),
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Updated Team"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
+        ApiResponse(code = 404, message = "Team not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.PATCH])
-    fun updateTeam(@Valid @RequestBody teamDto: TeamUpdDto, @PathVariable id: Int?): ResponseEntity<String> {
+    fun updateTeam(@Valid @RequestBody teamDto: TeamUpdDto, @PathVariable id: Int?): ResponseEntity<Response<TeamEntity>> {
+        val response: Response<TeamEntity> = Response()
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
@@ -106,12 +105,14 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
         teamExists.get().name = teamDto.name
 
         teamService.persist(teamExists.get())
-        return ResponseEntity.noContent().build()
+        response.data=teamExists.get()
+        return ResponseEntity.ok().body(response)
     }
 
-    @ApiOperation("Delete a Team")
-    @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Team"),
+    @ApiOperation("Delete a Team, yours Transfers and their Tournament Participations")
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Team and Transfers"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
+        ApiResponse(code = 404, message = "Team not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.DELETE])
     fun delTeam(@PathVariable id: Int?): ResponseEntity<Response<Void>> {
@@ -137,7 +138,6 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
     @RequestMapping(value = ["/{id}/players"], method = [RequestMethod.POST])
     fun addTeamPlayer(@PathVariable id: Int?, @Valid @RequestBody playerDto: PlayerDto): ResponseEntity<Response<PlayerEntity>> {
         val response: Response<PlayerEntity> = Response()
-        var date: Date? = null
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
@@ -148,13 +148,11 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
             response.erros.add("Player already exists!")
         }
 
-        try {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            format.isLenient = false
-            date = format.parse(playerDto.birthDate)
-        } catch (e: Exception) {
-            response.erros.add("birthDate is must be in format dd/MM/yyyy and be valid!")
-        }
+        val date: Date? = utils.parseDate(playerDto.birthDate!!)
+
+        if(date == null)
+            response.erros.add("birthDate must be in format dd/MM/yyyy and be valid!")
+
 
         val team: Optional<TeamEntity> = teamService.findTeamById(id)
         if(team.isEmpty) {
@@ -177,12 +175,18 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
     @ApiOperation("Return Players of a Team by id")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
         ApiResponse(code = 400, message = "Parameter not informed"),
+        ApiResponse(code = 404, message = "Team not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}/players"],method = [RequestMethod.GET])
     fun findPlayersTeam(@PathVariable id: Int?): ResponseEntity<List<PlayerEntity>> {
 
         if (id == null) {
             return ResponseEntity.badRequest().build()
+        }
+
+        val teamExists = teamService.findTeamById(id)
+        if(teamExists.isEmpty) {
+            return ResponseEntity.notFound().build()
         }
 
         val players: List<PlayerEntity> = teamService.findTeamPlayers(id)
@@ -193,6 +197,7 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
     @ApiOperation("Return Transfers of a Team by id")
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
         ApiResponse(code = 400, message = "Parameter not informed"),
+        ApiResponse(code = 404, message = "Team not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
     @RequestMapping(value = ["/{id}/transfers"],method = [RequestMethod.GET])
     fun findTransfersTeam(@PathVariable id: Int?): ResponseEntity<TeamTransfersDto> {
@@ -201,9 +206,66 @@ class TeamsController(val teamService: TeamService, val playerService: PlayerSer
             return ResponseEntity.badRequest().build()
         }
 
+        val teamExists = teamService.findTeamById(id)
+        if(teamExists.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+
         val transfers: TeamTransfersDto = teamService.findTeamTransfers(id)
 
         return ResponseEntity.ok(transfers)
+    }
+
+    @ApiOperation("Return Tournaments of a Team by id")
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
+        ApiResponse(code = 400, message = "Parameter not informed"),
+        ApiResponse(code = 404, message = "Team not exists"),
+        ApiResponse(code = 500, message = "Unexpected error")] )
+    @RequestMapping(value = ["/{id}/tournaments"],method = [RequestMethod.GET])
+    fun findTournamentsTeam(@PathVariable id: Int?): ResponseEntity<List<TeamTournamentsDto>> {
+
+        if (id == null) {
+            return ResponseEntity.badRequest().build()
+        }
+
+        val teamExists = teamService.findTeamById(id)
+        if(teamExists.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+
+        val tournaments: List<TeamTournamentsDto> = teamService.findTeamTournaments(id)
+
+        return ResponseEntity.ok(tournaments)
+    }
+
+    @ApiOperation("Return Home or Away Matches of a Team by id and type(home or away)")
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Successful request"),
+        ApiResponse(code = 400, message = "Parameter not informed"),
+        ApiResponse(code = 404, message = "Team not exists"),
+        ApiResponse(code = 500, message = "Unexpected error")] )
+    @RequestMapping(value = ["/{id}/matches"],method = [RequestMethod.GET])
+    fun findMatchesTeam(@PathVariable id: Int?, @RequestParam(value="type") type: String?): ResponseEntity<Response<List<MatchEntity>>> {
+
+        if (id == null || type == null) {
+            return ResponseEntity.badRequest().build()
+        }
+
+        val response: Response<List<MatchEntity>> = Response()
+
+        if(type == "" || (type != "home" && type != "away")) {
+            response.erros.add("Type must be home or away")
+            return ResponseEntity.badRequest().body(response)
+        }
+
+        val teamExists = teamService.findTeamById(id)
+        if(teamExists.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+
+        val homeMatches: List<MatchEntity> = teamService.findMatchesTeam(id,type)
+        response.data = homeMatches
+
+        return ResponseEntity.ok(response)
     }
 
 }
