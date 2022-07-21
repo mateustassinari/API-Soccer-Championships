@@ -112,8 +112,8 @@ class PlayersController(val playerService: PlayerService, val transferService: T
         return ResponseEntity.ok().body(response)
     }
 
-    @ApiOperation("Delete a Player")
-    @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Player"),
+    @ApiOperation("Delete a Player and yours Transfers")
+    @ApiResponses(value = [ApiResponse(code = 200, message = "Deleted Player and Transfers"),
         ApiResponse(code = 400, message = "Lack of information/poorly formatted request"),
         ApiResponse(code = 404, message = "Player not exists"),
         ApiResponse(code = 500, message = "Unexpected error")] )
